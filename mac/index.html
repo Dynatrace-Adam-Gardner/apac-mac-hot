@@ -25,7 +25,7 @@
                   id="mac"
                   title="HOT Session: Monitoring as Code"
                   environment="web"
-                  feedback-link="mailto:adam.gardner@dynatrace.com">
+                  feedback-link="">
     
       <google-codelab-step label="Welcome" duration="0">
         <h2 is-upgraded>Services HOT Session: Monitoring as Code</h2>
@@ -45,6 +45,13 @@
         <p>Each participant should have received access to a Dynatrace environment. In this environment you&#39;ll find a single host connected.</p>
 <p>You&#39;ve received the following architecture diagram from your customer.</p>
 <p class="image-container"><img alt="customer-architecture" src="img\f83c2bad89f23ec.png"></p>
+<pre><code>http://staging.customera.VMIP.nip.io
+http://customera.VMIP.nip.io
+http://staging.customerb.VMIP.nip.io
+http://customerb.VMIP.nip.io
+http://staging.customerc.VMIP.nip.io
+http://customerc.VMIP.nip.io
+</code></pre>
 <h2 is-upgraded>Please visit each customer website and ensure they&#39;re available.</h2>
 
 
@@ -64,15 +71,15 @@
     
       <google-codelab-step label="What We Will Build" duration="0">
         <ol type="1">
-<li>A management zone per customer (namespace)</li>
-<li>Pull the existing kubernetes annotations and labels and apply as tags</li>
+<li>Pull the existing kubernetes annotations and labels. Apply as Dynatrace tags</li>
 <li>Tag the process groups per customer</li>
 <li>Tag the services per customer</li>
 <li>Create friendly process group names by prepending the customer name</li>
 <li>Create friendly service names by prepending the customer name</li>
-<li>An application (with URL rules), one per customer</li>
+<li>A management zone per customer (namespace)</li>
 <li>A single customer focused dashboard</li>
 <li>A global dashboard for all customers</li>
+<li>An application (with URL rules), one per customer</li>
 <li>An alert profile per customer</li>
 <li>A problem notification per customer</li>
 </ol>
@@ -127,7 +134,7 @@
 <li>A blank file alongside the <code>monaco</code> binary called <code>environments.yaml</code></li>
 </ul>
 <p class="image-container"><img alt="file and folder structure" src="img\d1bdb53fb3398517.png"></p>
-<h2 is-upgraded>&gt;&gt; 5 Minute Break &lt;&lt;</h2>
+<h2 is-upgraded>5 Minute Break</h2>
 
 
       </google-codelab-step>
@@ -500,9 +507,176 @@ prepend_customer_name:
 
       </google-codelab-step>
     
-      <google-codelab-step label="Break #3" duration="0">
-        <p>We will now have a 15 minute break.</p>
-<p>If anyone failed to complete the previous task and needs help, please ask during this time.</p>
+      <google-codelab-step label="Status Check / Break #3" duration="0">
+        <h2 is-upgraded>Status Check</h2>
+<p>We have now built the following:</p>
+<ul>
+<li>Kubernetes labels automatically generate Dynatrace tags</li>
+<li>Dynatrace entities (processes and services) automatically tagged with customer name</li>
+<li>Processes, process groups and services contain the customer name</li>
+</ul>
+<p>We will now have a 15 minute break.</p>
+<p>If anyone struggled to complete the previous task and needs help, please ask during this time.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Your Turn: Application Definitions" duration="0">
+        <p>We have 6 websites:</p>
+<ol type="1">
+<li>Customer A Staging</li>
+<li>Customer A Production</li>
+<li>Customer B Staging</li>
+<li>Customer B Production</li>
+<li>Customer C Staging</li>
+<li>Customer C Production</li>
+</ol>
+<p>Basic XHR detection and JQuery support should be enabled by default for all websites. Customer wants <code>20%</code> of traffic to be capture in staging environments and <code>100%</code> capture in production.</p>
+<p>Use the <code>monaco</code> tool to define applications for each of these websites.</p>
+<p>Hint #1: Configuration type is <code>application</code> Hint #2: Quote values in the YAML file, even if it&#39;s a number or boolean. eg. <code>123</code> should be <code>&#34;123&#34;</code></p>
+<p>Do <strong>not</strong> define the application URL rules yet, we&#39;ll do that together next.</p>
+<p>Time: 10 minutes</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="⚠️ Customer Misconfiguration!" duration="0">
+        <p>Your customer made a mistake! Their client are paying for Dynatrace and some have complained that they&#39;re not seeing all their visits.</p>
+<p>They should actually be capturing the following traffic amounts for each customer:</p>
+<ul>
+<li>Customer A Staging environment: 50% of traffic</li>
+<li>Customer B Staging environment: 20% of traffic</li>
+<li>Customer C Staging environment: 80% of traffic</li>
+</ul>
+<p>Time: 5 minutes</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="URL Rules" duration="0">
+        <p>Time to apply URL rules to the applications. So far we&#39;ve dealt with configurations that stand alone. They do not reference, depend on or relate to any other configurations.</p>
+<p>URL rules relate to the application for which they&#39;re assigned. So we have this:</p>
+<table>
+<tr></tr>
+<tr><td colspan="1" rowspan="1"><p><strong>Application</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>URL Rule (begins with)</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Customer A - Staging</p>
+</td><td colspan="1" rowspan="1"><p>http://staging.customera</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Customer B - Staging</p>
+</td><td colspan="1" rowspan="1"><p>http://staging.customerb</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Customer C - Staging</p>
+</td><td colspan="1" rowspan="1"><p>http://staging.customerc</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Customer A - Production</p>
+</td><td colspan="1" rowspan="1"><p>http://customera</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Customer B - Production</p>
+</td><td colspan="1" rowspan="1"><p>http://customerb</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Customer C - Production</p>
+</td><td colspan="1" rowspan="1"><p>http://customerc</p>
+</td></tr>
+</table>
+<h2 is-upgraded>Create Configuration Type</h2>
+<ul>
+<li>Create a new folder <code>projects/app-detection-rule</code></li>
+<li>Create a YAML and JSON file</li>
+</ul>
+<h2 is-upgraded>YAML File Content</h2>
+<pre><code>config:
+  - customer-a-staging: &#34;rule.json&#34;
+  - customer-a-production: &#34;rule.json&#34;
+  - customer-b-staging: &#34;rule.json&#34;
+  - customer-b-production: &#34;rule.json&#34;
+  - customer-c-staging: &#34;rule.json&#34;
+  - customer-c-production: &#34;rule.json&#34;
+
+customer-a-staging:
+  - name: &#34;/projects/baseconfig/application/customer-a-staging.name&#34;
+  - application_id: &#34;/projects/baseconfig/application/customer-a-staging.id&#34;
+  - pattern: &#34;http://staging.customera&#34;
+
+customer-b-staging:
+  - name: &#34;/projects/baseconfig/application/customer-b-staging.name&#34;
+  - application_id: &#34;/projects/baseconfig/application/customer-b-staging.id&#34;
+  - pattern: &#34;http://staging.customerb&#34;
+  
+customer-c-staging:
+  - name: &#34;/projects/baseconfig/application/customer-c-staging.name&#34;
+  - application_id: &#34;/projects/baseconfig/application/customer-c-staging.id&#34;
+  - pattern: &#34;http://staging.customerc&#34;
+  
+customer-a-production:
+  - name: &#34;/projects/baseconfig/application/customer-a-prod.name&#34;
+  - application_id: &#34;/projects/baseconfig/application/customer-a-prod.id&#34;
+  - pattern: &#34;http://customera&#34;
+
+customer-b-production:
+  - name: &#34;/projects/baseconfig/application/customer-b-prod.name&#34;
+  - application_id: &#34;/projects/baseconfig/application/customer-b-prod.id&#34;
+  - pattern: &#34;http://customerb&#34;
+  
+customer-c-production:
+  - name: &#34;/projects/baseconfig/application/customer-c-prod.name&#34;
+  - application_id: &#34;/projects/baseconfig/application/customer-c-prod.id&#34;
+  - pattern: &#34;http://customerc&#34;
+</code></pre>
+<h2 is-upgraded>Apply with <code>monaco</code></h2>
+<pre><code>monaco.exe --environments=environments.yaml
+</code></pre>
+<h2 is-upgraded>JSON File Content</h2>
+<pre><code>{
+  &#34;applicationIdentifier&#34;: &#34;&#123;&#123; .application_id }}&#34;,
+  &#34;filterConfig&#34;: {
+    &#34;pattern&#34;: &#34;&#123;&#123; .pattern }}&#34;,
+    &#34;applicationMatchType&#34;: &#34;BEGINS_WITH&#34;,
+    &#34;applicationMatchTarget&#34;: &#34;URL&#34;
+  }
+}
+</code></pre>
+<p class="image-container"><img alt="url rule output" src="img\dfc149d089410b36.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Your Turn: Update Customer Tag" duration="0">
+        <p>We need to update the <code>customer</code> auto tag rule to include the application.</p>
+<p>Hint: You only need to adjust the <code>auto-tag/customertag.json</code> file. You probably need to experiment in the UI first :)</p>
+<p class="image-container"><img alt="update customer tag" src="img\740e1a5e2cde10cf.png"></p>
+<p>Time: 15mins</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Status Check / Break #4" duration="0">
+        <h2 is-upgraded>Status Check</h2>
+<p>You should now have code which creates the following components:</p>
+<ul>
+<li>Kubernetes labels automatically generate Dynatrace tags</li>
+<li>Dynatrace entities (processes and services) automatically tagged with customer name</li>
+<li>Processes, process groups and services contain the customer name</li>
+<li>6x applications (2 per customer)</li>
+<li>6x application URL rules (1 per application, 2 per customer)</li>
+</ul>
+<h2 is-upgraded>Take a 15 minute break.</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="New Customer Requirement!" duration="0">
+        <p>Your customer wants to track and chart <code>response time</code> and <code>failure rate</code> for each page is every environment.</p>
+<p><strong>How do you deliver this via automation?</strong></p>
+<p>Use chat to discuss for 5 minutes with colleagues.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Your Turn: Calculated Service Metrics" duration="0">
+        <p>Use calculated service metrics, defined as part of <code>monaco</code> tool to track response time and failure rate for <code>production</code> and <code>staging</code> websites across all customers.</p>
+<p>Time: 15 minutes.</p>
 
 
       </google-codelab-step>
