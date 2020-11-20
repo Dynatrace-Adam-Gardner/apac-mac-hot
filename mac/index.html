@@ -28,7 +28,8 @@
                   feedback-link="">
     
       <google-codelab-step label="Welcome" duration="0">
-        <h2 is-upgraded>Services HOT Session: Monitoring as Code</h2>
+        <h2 is-upgraded>⚠️ This is a work in progress!</h2>
+<h2 is-upgraded>Services HOT Session: Monitoring as Code</h2>
 <p>Welcome to the APAC Services Hands on Training session.</p>
 <h2 is-upgraded>Scenario</h2>
 <p>The Dynatrace customer you&#39;ve been assigned to sells SaaS to <em>their</em> end customers. Currently they have 3 customers: <code>Customer A</code>, <code>Customer B</code> and <code>Customer C</code>.</p>
@@ -76,10 +77,11 @@ http://customerc.VMIP.nip.io
 <li>Tag the services per customer</li>
 <li>Create friendly process group names by prepending the customer name</li>
 <li>Create friendly service names by prepending the customer name</li>
-<li>A management zone per customer (namespace)</li>
+<li>An application with URL rules, one per customer environment (total of 6)</li>
+<li>Ability to track and dashboard key URLs and metrics per customer and environment</li>
+<li>A management zone per customer</li>
 <li>A single customer focused dashboard</li>
 <li>A global dashboard for all customers</li>
-<li>An application (with URL rules), one per customer</li>
 <li>An alert profile per customer</li>
 <li>A problem notification per customer</li>
 </ol>
@@ -533,7 +535,10 @@ prepend_customer_name:
 </ol>
 <p>Basic XHR detection and JQuery support should be enabled by default for all websites. Customer wants <code>20%</code> of traffic to be capture in staging environments and <code>100%</code> capture in production.</p>
 <p>Use the <code>monaco</code> tool to define applications for each of these websites.</p>
-<p>Hint #1: Configuration type is <code>application</code> Hint #2: Quote values in the YAML file, even if it&#39;s a number or boolean. eg. <code>123</code> should be <code>&#34;123&#34;</code></p>
+<ul>
+<li>Hint #1: Configuration type is <code>application</code></li>
+<li>Hint #2: Quote values in the YAML file, even if the value is a number or boolean. eg. <code>123</code> should be <code>&#34;123&#34;</code></li>
+</ul>
 <p>Do <strong>not</strong> define the application URL rules yet, we&#39;ll do that together next.</p>
 <p>Time: 10 minutes</p>
 
