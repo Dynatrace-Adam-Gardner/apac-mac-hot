@@ -1,0 +1,519 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>HOT Session: Monitoring as Code</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="mac"
+                  title="HOT Session: Monitoring as Code"
+                  environment="web"
+                  feedback-link="mailto:adam.gardner@dynatrace.com">
+    
+      <google-codelab-step label="Welcome" duration="0">
+        <h2 is-upgraded>Services HOT Session: Monitoring as Code</h2>
+<p>Welcome to the APAC Services Hands on Training session.</p>
+<h2 is-upgraded>Scenario</h2>
+<p>The Dynatrace customer you&#39;ve been assigned to sells SaaS to <em>their</em> end customers. Currently they have 3 customers: <code>Customer A</code>, <code>Customer B</code> and <code>Customer C</code>.</p>
+<p>Your customer is currently running on AWS but they have plans to extend their service to Azure and / or GCP in the near future.</p>
+<p>Your customer is planning a large marketing event in just over 1 month. They expect to have over 1000 customers within the first few months.</p>
+<p>Your customer would like to use a single monitoring tool (Dynatrace) to monitor the health of their entire customer environment. They need to see statistics, health and metrics of individual customers views in addition to a &#34;global&#34; health dashboard for all customers.</p>
+<p>Your job is to help them achieve this goal. <strong>You have less than 1 month to deliver this outcome.</strong></p>
+<h2 is-upgraded>Discuss: How would you handle this request?</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Exploring the Environment" duration="0">
+        <p>Each participant should have received access to a Dynatrace environment. In this environment you&#39;ll find a single host connected.</p>
+<p>You&#39;ve received the following architecture diagram from your customer.</p>
+<p class="image-container"><img alt="customer-architecture" src="img\f83c2bad89f23ec.png"></p>
+<h2 is-upgraded>Please visit each customer website and ensure they&#39;re available.</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Discussion: The Requirement" duration="0">
+        <p>Take 10 minutes and use the chat box to discuss with colleagues:</p>
+<ul>
+<li>How would you handle this requirement?</li>
+<li>What is the most future-proof and scalable way to build this?</li>
+<li>What are some of the drawbacks to Dynatrace&#39;s &#34;out of the box&#34; configuration?</li>
+<li>What <em>shouldn&#39;t</em> we do?</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="What We Will Build" duration="0">
+        <ol type="1">
+<li>A management zone per customer (namespace)</li>
+<li>Pull the existing kubernetes annotations and labels and apply as tags</li>
+<li>Tag the process groups per customer</li>
+<li>Tag the services per customer</li>
+<li>Create friendly process group names by prepending the customer name</li>
+<li>Create friendly service names by prepending the customer name</li>
+<li>An application (with URL rules), one per customer</li>
+<li>A single customer focused dashboard</li>
+<li>A global dashboard for all customers</li>
+<li>An alert profile per customer</li>
+<li>A problem notification per customer</li>
+</ol>
+<h2 is-upgraded>Customer Delivery of Configuration</h2>
+<p>We will deliver all of this configuration to the customer as code. <br><br> The customer can then:</p>
+<ul>
+<li>Automate the creation of the configuration</li>
+<li>Automate Dynatrace configuration in their delivery pipeline</li>
+<li>Version control the code</li>
+<li>Audit any changes to the Dynatrace monitoring setup</li>
+</ul>
+<p>Dynatrace can then:</p>
+<ul>
+<li>Simplify the handover between presales and post sales</li>
+<li>Simplify, standardise and speed up the handover between consultants</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="How We Will Build It" duration="0">
+        <p>Due to the scale that this customer expects, <strong>every configuration we deliver must be automated</strong>. That said, we can build the template manually then use automation to build subsequent configuration.</p>
+<h2 is-upgraded>Introducing Monaco</h2>
+<p><a href="https://github.com/dynatrace-oss/dynatrace-monitoring-as-code" target="_blank">Monaco</a> is an open source project from Dynatrace to apply <strong>Mon</strong>itoring <strong>A</strong>s <strong>Co</strong>de at scale.</p>
+<p>The <code>monaco</code> tool is idempotent. It will only make changes if required. Re-run as many times as you wish.</p>
+<h2 is-upgraded>Download Monaco</h2>
+<p>Go to <code>https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases</code> and download the latest <code>monaco</code> release for your operating system.</p>
+<p>For ease during this demo, please rename the binary to <code>monace.exe</code> (if on windows) or <code>monaco</code> if on macOS or linux.</p>
+<ul>
+<li>Create a new directory and move the <code>monaco</code> binary into this directory</li>
+<li>Create a new folder called <code>projects</code></li>
+<li>Create a new file called <code>environments.yaml</code></li>
+</ul>
+<h2 is-upgraded>API Token</h2>
+<p>Log into Dynatrace and generate an API Token.</p>
+<p>Your API token must have the following permissions:</p>
+<ul>
+<li>Access problem and event feed, metrics, and topology</li>
+<li>Read Configuration</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Status Check / Break #1" duration="0">
+        <h2 is-upgraded>Status Check</h2>
+<p>You should now have:</p>
+<ul>
+<li>A Dynatrace API token</li>
+<li>A folder containing the <code>monaco</code> binary</li>
+<li>A folder alongside the <code>monaco</code> binary called <code>projects</code></li>
+<li>A blank file alongside the <code>monaco</code> binary called <code>environments.yaml</code></li>
+</ul>
+<p class="image-container"><img alt="file and folder structure" src="img\d1bdb53fb3398517.png"></p>
+<h2 is-upgraded>&gt;&gt; 5 Minute Break &lt;&lt;</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Define Environment" duration="0">
+        <h2 is-upgraded>Define Your Environment</h2>
+<p>Open <code>environments.yaml</code> and type the following:</p>
+<pre><code>mac_training_environment:
+  - name: &#34;mac_training_environment&#34;
+  - env-url: &#34;&#123;&#123; .Env.MAC_TRAINING_ENVIRONMENT }}&#34;
+  - env-token-name: &#34;TOKEN_MAC_TRAINING_ENVIRONMENT&#34;
+</code></pre>
+<p><a href="https://gist.github.com/Dynatrace-Adam-Gardner/283dcbe10f6cd8e3b212e96c8648f5df" target="_blank">Copy &amp; Paste version here</a>.</p>
+<h2 is-upgraded>Set Dynatrace URL</h2>
+<p>Open a new command window and set your Dynatrace URL as an environment variable.</p>
+<p>Notice that the name of this variable matches the <code>env-url</code> variable you used in <code>environments.yaml</code></p>
+<pre><code>set MAC_TRAINING_ENVIRONMENT=https://fqp43822.live.dynatrace.com
+</code></pre>
+<h2 is-upgraded>Set Dynatrace API Token</h2>
+<p>Repeat the process by setting your API token. Again notice that the name corresponds to the value used in <code>environments.yaml</code>:</p>
+<pre><code>set TOKEN_MAC_TRAINING_ENVIRONMENT=***
+</code></pre>
+<h2 is-upgraded>Run Monaco</h2>
+<p>In the same command window, run <code>monaco</code>:</p>
+<pre><code>monaco.exe --environments=environments.yaml
+</code></pre>
+<p>You should see:</p>
+<pre><code>&gt; monaco.exe --environments=environments.yaml
+  INFO  Dynatrace Monitoring as Code v1.0.0
+  INFO  Executing projects in this order:
+  INFO        1: projects (0 configs)
+  INFO  Processing environment mac_training_environment...
+  INFO        Processing project projects...
+  INFO  Deployment finished without errors
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Monaco Structure" duration="0">
+        <h2 is-upgraded>File and Folder Structure</h2>
+<p>Monaco has the following concepts:</p>
+<ol type="1">
+<li>Environments</li>
+<li>Projects</li>
+<li>Configuration Types</li>
+</ol>
+<h3 is-upgraded>Environments</h3>
+<p>Environments are simply Dynatrace environments, SaaS or Managed. <code>monaco</code> can push configuration to one or more environments.</p>
+<p>As we&#39;ve already seen, environments are defined in <code>environments.yaml</code>.</p>
+<h2 is-upgraded>Projects</h2>
+<p>Projects are distinct units of configuration. The most basic is to create a single project which holds your configuration. You can then push this identical configuration out to one (or multiple) environments.</p>
+<p>Projects are created by creating a new folder inside the <code>projects</code> folder.</p>
+<h2 is-upgraded>Configuration Types</h2>
+<p>A single configuration item in Dynatrace. The <code>monaco</code> tool currently supports the following configuration types:</p>
+<ul>
+<li>alerting-profile</li>
+<li>management-zone</li>
+<li>auto-tag</li>
+<li>dashboard</li>
+<li>notification</li>
+<li>extension</li>
+<li>custom-service-java</li>
+<li>anomaly-detection-metrics</li>
+<li>synthetic-location</li>
+<li>synthetic-monitor</li>
+<li>application</li>
+<li>app-detection-rule</li>
+<li>aws-credentials</li>
+<li>kubernetes-credentials</li>
+<li>azure-credentials</li>
+<li>request-attributes</li>
+<li>calculated-metrics-service</li>
+<li>calculated-metrics-log</li>
+<li>conditional-naming-processgroup</li>
+<li>conditional-naming-host</li>
+<li>conditional-naming-service</li>
+<li>maintenance-window</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build: Use k8s Labels" duration="0">
+        <h2 is-upgraded>k8s labels and annotations as Dynatrace Tags</h2>
+<p>The customer has already annotated their <code>Deployment</code> with the following labels which we can leverage automatically in Dynatrace.</p>
+<pre><code>---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-web
+  namespace: customer-a
+  labels:
+    app: web
+    stage: prod
+</code></pre>
+<p>This is simple, give the <code>default</code> service account permission to view metadata about the <code>customer-a</code>, <code>customer-b</code> and <code>customer-c</code> namespaces.</p>
+<pre><code>kubectl -n customer-a create rolebinding default-view --clusterrole=view --serviceaccount=customer-a:default
+kubectl -n customer-b create rolebinding default-view --clusterrole=view --serviceaccount=customer-b:default
+kubectl -n customer-c create rolebinding default-view --clusterrole=view --serviceaccount=customer-c:default
+</code></pre>
+<p>Note: This has already been configured in your demo environments.</p>
+<p class="image-container"><img alt="k8s labels" src="img\2927712df35cac72.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build: Customer Auto Tag Rule" duration="0">
+        <h2 is-upgraded>baseconfig project</h2>
+<p>Inside <code>projects</code>, create a folder called <code>baseconfig</code>. This folder will hold all of our configuration.</p>
+<h2 is-upgraded>Namespace = Customer Tag</h2>
+<p>Recall that your client creates a new namespace for each of their customers. Create an auto-tag rule via the UI which matches this definition:</p>
+<p class="image-container"><img alt="customer-auto-tag" src="img\a3f50d33a1d0525d.png"></p>
+<h3 is-upgraded>Question: What will this tag do?</h3>
+<h2 is-upgraded>Get JSON Representation</h2>
+<p>Use the Dynatrace API to retrieve the JSON representation of that tag.</p>
+<p>Use the <code>Automatically Applied Tags</code> endpoint in the <code>Configuration Api</code> to <code>GET</code> all tag IDs:</p>
+<pre><code>{
+  &#34;values&#34;: [{
+      &#34;id&#34;: &#34;afd026e7-2abc-492f-873e-66bb571a572a&#34;,
+      &#34;name&#34;: &#34;customer&#34;
+    }]
+}
+</code></pre>
+<p>Use the other <code>GET</code> endpoint by passing this ID to retrieve the full JSON.</p>
+<pre><code>GET /api/config/v1/autoTags/afd026e7-2abc-492f-873e-66bb571a572a
+</code></pre>
+<p>Save this JSON as a file.</p>
+<h2 is-upgraded>Create auto-tag folder for Monaco</h2>
+<p>Inside <code>projects/baseconfig</code>, create a new folder called <code>auto-tag</code>.</p>
+<h2 is-upgraded>YAML &amp; JSON Explanation</h2>
+<p>Inside each configuration type folder you need one YAML file and one (or more) JSON files.</p>
+<p>Every configuration needs a YAML containing required and optional content.</p>
+<p>A minimal viable config looks like this:</p>
+<pre><code>config:
+    - {config name} : &#34;{path of config json template}&#34;
+
+{config name}:
+    - name: &#34;{a unique name}&#34;
+</code></pre>
+<p>The JSON file(s) inside this folder essentially hold the content that you&#39;d normally <code>POST</code> to Dynatrace.</p>
+<p>The only difference is that you can use <strong>variables</strong> inside the JSON which <strong>reference the YAML file</strong>.</p>
+<p>Let&#39;s see that in action...</p>
+<h2 is-upgraded>Create tags.yaml</h2>
+<p>Create <code>projects/baseconfig/auto-tag/tags.yaml</code>:</p>
+<pre><code>config:
+  - customer_tag: &#34;customertag.json&#34;
+
+customer_tag:
+  - name: &#34;customer&#34;
+</code></pre>
+<p><a href="https://gist.github.com/Dynatrace-Adam-Gardner/0bc126a3535d8d5578c3f844d6a653dd" target="_blank">Copy &amp; Paste version here</a>.</p>
+<h2 is-upgraded>Create customertag.json</h2>
+<p>Create <code>projects/baseconfig/auto-tag/customertag.json</code></p>
+<p>Paste in the JSON content that you retrieved from the Dynatrace API.</p>
+<h2 is-upgraded>Cleanup the JSON</h2>
+<p>There are a few sections we don&#39;t need in <code>customertag.json</code>.</p>
+<p>Remove the <code>metadata</code> section and <code>id</code> variable. Your JSON should now look like this:</p>
+<pre><code>{
+  &#34;name&#34;: &#34;customer&#34;,
+  &#34;rules&#34;: [
+    {
+      &#34;type&#34;: &#34;PROCESS_GROUP&#34;,
+      &#34;enabled&#34;: true,
+      &#34;valueFormat&#34;: &#34;{ProcessGroup:KubernetesNamespace}&#34;,
+      &#34;propagationTypes&#34;: [
+        &#34;PROCESS_GROUP_TO_SERVICE&#34;
+      ],
+      &#34;conditions&#34;: [
+        {
+          &#34;key&#34;: {
+            &#34;attribute&#34;: &#34;PROCESS_GROUP_PREDEFINED_METADATA&#34;,
+            &#34;dynamicKey&#34;: &#34;KUBERNETES_NAMESPACE&#34;,
+            &#34;type&#34;: &#34;PROCESS_PREDEFINED_METADATA_KEY&#34;
+          },
+          &#34;comparisonInfo&#34;: {
+            &#34;type&#34;: &#34;STRING&#34;,
+            &#34;operator&#34;: &#34;EXISTS&#34;,
+            &#34;value&#34;: null,
+            &#34;negate&#34;: false,
+            &#34;caseSensitive&#34;: null
+          }
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+<h2 is-upgraded>Template the JSON</h2>
+<p>Notice that we have certain hard coded values in the JSON. We can template these.</p>
+<p>Templates in <code>monaco</code> are denoted with double curly braces.</p>
+<p>Replace <code>customer</code> with <code>&#123;&#123; .name }}</code>:</p>
+<pre><code>{
+  &#34;name&#34;: &#34;&#123;&#123; .name }}&#34;,
+  &#34;rules&#34;: [...]
+  ...
+}
+</code></pre>
+<h2 is-upgraded>Explanation of templates</h2>
+<p>When <code>monaco</code> executes, it will look at each configuration in the YAML and process them sequentially. We have one configuration:</p>
+<pre><code>- customer_tag: &#34;customertag.json&#34;
+</code></pre>
+<p><code>monaco</code> then looks at the JSON and the properties for <code>customer_tag</code>. The properties are:</p>
+<pre><code>customer_tag:
+  - name: &#34;customer&#34;
+</code></pre>
+<p><code>monaco</code> replaces anything inside curly braces with the corresponding value (denoted by <code>.VariableName</code>). In this way, <code>&#34;&#123;&#123; .name }}&#34;</code> becomes <code>&#34;customer&#34;</code>.</p>
+<h2 is-upgraded>Apply Configuration as Code</h2>
+<p>Delete any previous tag rules you have in the tenant.</p>
+<p>Apply your configuration:</p>
+<pre><code>monaco.exe --environments=environments.yaml
+</code></pre>
+<p>You should see that one configuration has been applied:</p>
+<pre><code>monaco.exe --environments=environments.yaml
+  INFO  Dynatrace Monitoring as Code v1.0.0
+  INFO  Executing projects in this order:
+  INFO        1: projects\baseconfig (1 configs)
+  INFO  Processing environment mac_training_environment...
+  INFO        Processing project projects\baseconfig...
+  INFO  Deployment finished without errors
+</code></pre>
+<p class="image-container"><img alt="customer-tag" src="img\1f27d56ba4e734c1.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Break #2" duration="0">
+        <h2 is-upgraded>10 minute break</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build: Process Group Naming Rule" duration="0">
+        <h2 is-upgraded>Prepend customer name to process</h2>
+<p>We need a way to quickly distinguish the processes (pods) for each customer. This configuration will prepend the <code>namespace</code> aka. customer name to the process group.</p>
+<h2 is-upgraded>Create Manually</h2>
+<p>Go to <code>Settings &gt; Processes and containers &gt; Process group naming</code>. Add a new rule:</p>
+<p class="image-container"><img alt="prepend process group" src="img\8904216bfbf13dbb.png"></p>
+<p>Name format is: <code>{ProcessGroup:KubernetesNamespace} - {ProcessGroup:DetectedName}</code></p>
+<h2 is-upgraded>Get PG Naming Rules via API</h2>
+<p>Hint: <code>Dynatrace API &gt; Configuration API &gt; Conditional Naming</code></p>
+<pre><code>{
+  &#34;values&#34;: [{
+      &#34;id&#34;: &#34;c6e41ebd-726a-4d79-9fd6-d3bcc37b836b&#34;,
+      &#34;name&#34;: &#34;Prepend Customer Name to PG&#34;
+    }]
+}
+</code></pre>
+<h2 is-upgraded>Get Definition</h2>
+<pre><code>{
+  &#34;metadata&#34;: {
+    &#34;configurationVersions&#34;: [
+      0
+    ],
+    &#34;clusterVersion&#34;: &#34;1.206.95.20201116-094826&#34;
+  },
+  &#34;id&#34;: &#34;c6e41ebd-726a-4d79-9fd6-d3bcc37b836b&#34;,
+  &#34;type&#34;: &#34;PROCESS_GROUP&#34;,
+  &#34;nameFormat&#34;: &#34;{ProcessGroup:KubernetesNamespace} - {ProcessGroup:DetectedName}&#34;,
+  &#34;displayName&#34;: &#34;Prepend Customer Name to PG&#34;,
+  &#34;enabled&#34;: true,
+  &#34;rules&#34;: [
+    {
+      &#34;key&#34;: {
+        &#34;attribute&#34;: &#34;PROCESS_GROUP_PREDEFINED_METADATA&#34;,
+        &#34;dynamicKey&#34;: &#34;KUBERNETES_NAMESPACE&#34;,
+        &#34;type&#34;: &#34;PROCESS_PREDEFINED_METADATA_KEY&#34;
+      },
+      &#34;comparisonInfo&#34;: {
+        &#34;type&#34;: &#34;STRING&#34;,
+        &#34;operator&#34;: &#34;EXISTS&#34;,
+        &#34;value&#34;: null,
+        &#34;negate&#34;: false,
+        &#34;caseSensitive&#34;: null
+      }
+    }
+  ]
+}
+</code></pre>
+<h2 is-upgraded>Cleanup &amp; Use Variables</h2>
+<p>Remove <code>metadata</code> and <code>id</code>. Use variables in JSON.</p>
+<pre><code>{
+  &#34;type&#34;: &#34;PROCESS_GROUP&#34;,
+  &#34;nameFormat&#34;: &#34;{ProcessGroup:KubernetesNamespace} - {ProcessGroup:DetectedName}&#34;,
+  &#34;displayName&#34;: &#34;&#123;&#123; .name }}&#34;,
+  &#34;enabled&#34;: true,
+  &#34;rules&#34;: [{
+      &#34;key&#34;: {
+        &#34;attribute&#34;: &#34;PROCESS_GROUP_PREDEFINED_METADATA&#34;,
+        &#34;dynamicKey&#34;: &#34;KUBERNETES_NAMESPACE&#34;,
+        &#34;type&#34;: &#34;PROCESS_PREDEFINED_METADATA_KEY&#34;
+      },
+      &#34;comparisonInfo&#34;: {
+        &#34;type&#34;: &#34;STRING&#34;,
+        &#34;operator&#34;: &#34;EXISTS&#34;,
+        &#34;value&#34;: null,
+        &#34;negate&#34;: false,
+        &#34;caseSensitive&#34;: null
+      }
+    }]
+}
+</code></pre>
+<h2 is-upgraded>Create Folder and File Structures</h2>
+<ol type="1">
+<li>Create <code>projects/baseconfig/conditional-naming-processgroup</code></li>
+<li>Create <code>rules.yaml</code></li>
+<li>Create <code>prepend-customer-name.json</code></li>
+</ol>
+<h2 is-upgraded>Complete YAML</h2>
+<pre><code>config:
+  - prepend_customer_name: &#34;prepend-customer-name.json&#34;
+  
+prepend_customer_name:
+  - name: &#34;Prepend Customer Name to PG&#34;
+</code></pre>
+<h2 is-upgraded>Complete JSON</h2>
+<p><code>prepend-customer-name.json</code> should have this content:</p>
+<pre><code>{
+  &#34;type&#34;: &#34;PROCESS_GROUP&#34;,
+  &#34;nameFormat&#34;: &#34;{ProcessGroup:KubernetesNamespace} - {ProcessGroup:DetectedName}&#34;,
+  &#34;displayName&#34;: &#34;&#123;&#123; .name }}&#34;,
+  &#34;enabled&#34;: true,
+  &#34;rules&#34;: [{
+      &#34;key&#34;: {
+        &#34;attribute&#34;: &#34;PROCESS_GROUP_PREDEFINED_METADATA&#34;,
+        &#34;dynamicKey&#34;: &#34;KUBERNETES_NAMESPACE&#34;,
+        &#34;type&#34;: &#34;PROCESS_PREDEFINED_METADATA_KEY&#34;
+      },
+      &#34;comparisonInfo&#34;: {
+        &#34;type&#34;: &#34;STRING&#34;,
+        &#34;operator&#34;: &#34;EXISTS&#34;,
+        &#34;value&#34;: null,
+        &#34;negate&#34;: false,
+        &#34;caseSensitive&#34;: null
+      }
+    }]
+}
+</code></pre>
+<h2 is-upgraded>Delete Manually Created Configuration</h2>
+<p>Delete the manually created process group naming rule from the Dynatrace UI.</p>
+<p class="image-container"><img alt="delete manual pg naming rule" src="img\4435c31cb499fb30.png"></p>
+<h2 is-upgraded>Run Monaco!</h2>
+<p>Run monaco to push your new config:</p>
+<pre><code>monaco.exe --environments=environments.yaml
+</code></pre>
+<p>Notice there are now two configurations applied:</p>
+<pre><code>monaco.exe --environments=environments.yaml
+  INFO  Dynatrace Monitoring as Code v1.0.0
+  INFO  Executing projects in this order:
+  INFO        1: projects\baseconfig (2 configs)
+  INFO  Processing environment mac_training_environment...
+  INFO        Processing project projects\baseconfig...
+  INFO  Deployment finished without errors
+</code></pre>
+<p class="image-container"><img alt="pg naming rule applied" src="img\1200d1ef9b0e8508.png"></p>
+<p>For fun, run the monaco tool again as many times as you wish. Notice it is perfectly safe.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Your Turn: Prepend Customer Name to Service Name" duration="0">
+        <p>Now it&#39;s your turn! Build configuration to prepend the customer name to the <code>service</code>.</p>
+<p>Hints:</p>
+<ul>
+<li>It&#39;s 99.9% identical to the process group example.</li>
+<li>The Configuration Type is <code>conditional-naming-service</code></li>
+</ul>
+<h2 is-upgraded>You have 15 minutes to complete this task</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Break #3" duration="0">
+        <p>We will now have a 15 minute break.</p>
+<p>If anyone failed to complete the previous task and needs help, please ask during this time.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
