@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: jenkins-virtualservice
+spec:
+  hosts:
+  - "jenkins.INGRESSPLACEHOLDER"
+  - "jenkins.127.0.0.1.nip.io"
+  gateways:
+  - istio-gateway
+  http:
+  - name: "jenkins route"
+    match:
+    - uri:
+        prefix: "/"
+    route:
+      - destination:
+          host: "jenkins.jenkins.svc.cluster.local"
+          port:
+            number: 8080
