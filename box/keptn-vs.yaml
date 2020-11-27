@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: keptn-virtualservice
+spec:
+  hosts:
+  - "keptn.INGRESSPLACEHOLDER"
+  - "keptn.127.0.0.1.nip.io"
+  gateways:
+  - istio-gateway
+  http:
+  - name: "keptn route"
+    match:
+    - uri:
+        prefix: "/"
+    route:
+      - destination:
+          host: "api-gateway-nginx.keptn.svc.cluster.local"
+          port:
+            number: 80
