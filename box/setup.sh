@@ -104,8 +104,8 @@ sed -i "s@- \"jenkins.INGRESSPLACEHOLDER\"@- \"jenkins.$VM_IP.nip.io\"@g" jenkin
 kubectl apply -f jenkins-vs.yaml
 
 # Authorise Keptn
-KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
-KEPTN_ENDPOINT=http://keptn.127.0.0.1.nip.io/api
+export KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
+export KEPTN_ENDPOINT=http://keptn.127.0.0.1.nip.io/api
 keptn auth --endpoint=$KEPTN_ENDPOINT --api-token=$KEPTN_API_TOKEN
 
 # Allow Dynatrace access to create tags from labels and annotations in each NS
