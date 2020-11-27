@@ -20,6 +20,9 @@ export DT_ENVIRONMENT_ID=***
 export VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 export DT_TENANT=$DT_ENVIRONMENT_ID.live.dynatrace.com
 
+full_path=$(realpath $0)
+setup_script_dir=$(dirname $full_path)
+
 # Install k3s
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.18.3+k3s1 K3S_KUBECONFIG_MODE="644" sh -s - --no-deploy=traefik
 echo "Waiting 30s for kubernetes nodes to be available..."
@@ -65,43 +68,43 @@ sleep 60
 
 # Deploy Customers A, B and C
 echo "Deploying customer resources..."
-kubectl apply -f deploy-customer-a.yaml -f deploy-customer-b.yaml -f deploy-customer-c.yaml
+kubectl apply -f $setup_script_dir/deploy-customer-a.yaml -f $setup_script_dir/deploy-customer-b.yaml -f $setup_script_dir/deploy-customer-c.yaml
 
 # Deploy Istio Gateway
-kubectl apply -f istio-gateway.yaml
+kubectl apply -f $setup_script_dir/istio-gateway.yaml
 
 # Deploy Jenkins
 # TODO
 # wget https://gist.githubusercontent.com/Dynatrace-Adam-Gardner/1bcb7051ded2b562f1028db0afd6972d/raw/8f510dac9758459941705240d6f4e55380efb437/jenkins-prereqs.yaml
-# kubectl apply -f jenkins-prereqs.yaml
+# kubectl apply -f $setup_script_dir/jenkins-prereqs.yaml
 # wget https://gist.githubusercontent.com/Dynatrace-Adam-Gardner/1290759bd71d0fdac955c26fc4e32719/raw/d52fe2d2665ad17a5fc6f0089ae45e32954bd2b5/jenkins-values.yaml
 # helm repo add jenkinsci https://charts.jenkins.io && helm repo update
-# helm install jenkins -n jenkins -f jenkins-values.yaml jenkinsci/jenkins
+# helm install jenkins -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkinsci/jenkins
 
 # Deploy Production Istio VirtualService
 # Provides routes to customers from http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
 wget https://gist.githubusercontent.com/Dynatrace-Adam-Gardner/6670f3ac60ae8421ed230b8ce5e8b924/raw/3e4a6b86c58a3fd49f9952a32247fae440261ffc/production-istio-vs.yaml
-sed -i "s@- \"customera.INGRESSPLACEHOLDER\"@- \"customera.$VM_IP.nip.io\"@g" production-istio-vs.yaml
-sed -i "s@- \"customerb.INGRESSPLACEHOLDER\"@- \"customerb.$VM_IP.nip.io\"@g" production-istio-vs.yaml
-sed -i "s@- \"customerc.INGRESSPLACEHOLDER\"@- \"customerc.$VM_IP.nip.io\"@g" production-istio-vs.yaml
-kubectl apply -f production-istio-vs.yaml
+sed -i "s@- \"customera.INGRESSPLACEHOLDER\"@- \"customera.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
+sed -i "s@- \"customerb.INGRESSPLACEHOLDER\"@- \"customerb.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
+sed -i "s@- \"customerc.INGRESSPLACEHOLDER\"@- \"customerc.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
+kubectl apply -f $setup_script_dir/production-istio-vs.yaml
 
 # Deploy Staging Istio VirtualService
 # Provides routes to customers from http://staging.customera.VMIP.nip.io, http://staging.customerb.VMIP.nip.io and http://staging.customerc.VMIP.nip.io
-sed -i "s@- \"staging.customera.INGRESSPLACEHOLDER\"@- \"staging.customera.$VM_IP.nip.io\"@g" staging-istio-vs.yaml
-sed -i "s@- \"staging.customerb.INGRESSPLACEHOLDER\"@- \"staging.customerb.$VM_IP.nip.io\"@g" staging-istio-vs.yaml
-sed -i "s@- \"staging.customerc.INGRESSPLACEHOLDER\"@- \"staging.customerc.$VM_IP.nip.io\"@g" staging-istio-vs.yaml
-kubectl apply -f staging-istio-vs.yaml
+sed -i "s@- \"staging.customera.INGRESSPLACEHOLDER\"@- \"staging.customera.$VM_IP.nip.io\"@g" $setup_script_dir/staging-istio-vs.yaml
+sed -i "s@- \"staging.customerb.INGRESSPLACEHOLDER\"@- \"staging.customerb.$VM_IP.nip.io\"@g" $setup_script_dir/staging-istio-vs.yaml
+sed -i "s@- \"staging.customerc.INGRESSPLACEHOLDER\"@- \"staging.customerc.$VM_IP.nip.io\"@g" $setup_script_dir/staging-istio-vs.yaml
+kubectl apply -f $setup_script_dir/staging-istio-vs.yaml
 
 # Deploy Keptn Istio VirtualService
 # Provides routes to http://keptn.VMIP.nip.io/api and http://keptn.VMIP.nip.io/bridge
-sed -i "s@- \"keptn.INGRESSPLACEHOLDER\"@- \"keptn.$VM_IP.nip.io\"@g" keptn-vs.yaml
-kubectl apply -f keptn-vs.yaml
+sed -i "s@- \"keptn.INGRESSPLACEHOLDER\"@- \"keptn.$VM_IP.nip.io\"@g" $setup_script_dir/keptn-vs.yaml
+kubectl apply -f $setup_script_dir/keptn-vs.yaml
 
 # Deploy Jenkins Istio VirtualService
 # Provides routes to http://jenkins.VMIP.nip.io
-sed -i "s@- \"jenkins.INGRESSPLACEHOLDER\"@- \"jenkins.$VM_IP.nip.io\"@g" jenkins-vs.yaml
-kubectl apply -f jenkins-vs.yaml
+sed -i "s@- \"jenkins.INGRESSPLACEHOLDER\"@- \"jenkins.$VM_IP.nip.io\"@g" $setup_script_dir/jenkins-vs.yaml
+kubectl apply -f $setup_script_dir/jenkins-vs.yaml
 
 # Authorise Keptn
 export KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
