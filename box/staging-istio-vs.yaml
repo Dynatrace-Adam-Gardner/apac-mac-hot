@@ -1,0 +1,63 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customera-staging-virtualservice
+spec:
+  hosts:
+  - "staging.customera.INGRESSPLACEHOLDER"
+  - "staging.customera.127.0.0.1.nip.io"
+  gateways:
+  - istio-gateway
+  http:
+  - name: "customer-a staging route"
+    match:
+    - uri:
+        prefix: "/"
+    route:
+      - destination:
+          host: "staging-web.customer-a.svc.cluster.local"
+          port:
+            number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customerb-staging-virtualservice
+spec:
+  hosts:
+  - "staging.customerb.INGRESSPLACEHOLDER"
+  - "staging.customerb.127.0.0.1.nip.io"
+  gateways:
+  - istio-gateway
+  http:
+  - name: "customer-b staging route"
+    match:
+    - uri:
+        prefix: "/"
+    route:
+      - destination:
+          host: "staging-web.customer-b.svc.cluster.local"
+          port:
+            number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customerc-staging-virtualservice
+spec:
+  hosts:
+  - "staging.customerc.INGRESSPLACEHOLDER"
+  - "staging.customerc.127.0.0.1.nip.io"
+  gateways:
+  - istio-gateway
+  http:
+  - name: "customer-c staging route"
+    match:
+    - uri:
+        prefix: "/"
+    route:
+      - destination:
+          host: "staging-web.customer-c.svc.cluster.local"
+          port:
+            number: 80
