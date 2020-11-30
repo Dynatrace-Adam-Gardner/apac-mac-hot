@@ -1,5 +1,5 @@
 #
-# Script intended for use on an AWS t3.medium with 20GB HDD
+# Script intended for use on an AWS t3.medium with 30GB HDD
 # This file:
 # - Installs k3s, Dynatrace OneAgent and Istio
 # - Creates 6 namespaces: dynatrace, keptn, jenkins, customer-a, customer-b and customer-c
@@ -74,7 +74,7 @@ kubectl apply -f $setup_script_dir/deploy-customer-a.yaml -f $setup_script_dir/d
 kubectl apply -f $setup_script_dir/istio-gateway.yaml
 
 # Deploy Jenkins
-kubectl apply -f $setup_script_dir/jenkins-ns-service.yaml
+kubectl apply -f $setup_script_dir/jenkins-ns.yaml
 helm repo add jenkins https://charts.jenkins.io && helm repo update
 helm install -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkins jenkins/jenkins
 
