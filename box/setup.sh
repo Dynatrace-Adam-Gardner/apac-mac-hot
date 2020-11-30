@@ -74,12 +74,9 @@ kubectl apply -f $setup_script_dir/deploy-customer-a.yaml -f $setup_script_dir/d
 kubectl apply -f $setup_script_dir/istio-gateway.yaml
 
 # Deploy Jenkins
-# TODO
-# wget https://gist.githubusercontent.com/Dynatrace-Adam-Gardner/1bcb7051ded2b562f1028db0afd6972d/raw/8f510dac9758459941705240d6f4e55380efb437/jenkins-prereqs.yaml
-# kubectl apply -f $setup_script_dir/jenkins-prereqs.yaml
-# wget https://gist.githubusercontent.com/Dynatrace-Adam-Gardner/1290759bd71d0fdac955c26fc4e32719/raw/d52fe2d2665ad17a5fc6f0089ae45e32954bd2b5/jenkins-values.yaml
-# helm repo add jenkinsci https://charts.jenkins.io && helm repo update
-# helm install jenkins -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkinsci/jenkins
+kubectl apply -f $setup_script_dir/jenkins-ns-service.yaml
+helm repo add jenkins https://charts.jenkins.io && helm repo update
+helm install -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkins jenkins/jenkins
 
 # Deploy Production Istio VirtualService
 # Provides routes to customers from http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
