@@ -87,7 +87,6 @@ kubectl apply -f $setup_script_dir/istio-gateway.yaml
 
 # Deploy Production Istio VirtualService
 # Provides routes to customers from http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
-wget https://gist.githubusercontent.com/Dynatrace-Adam-Gardner/6670f3ac60ae8421ed230b8ce5e8b924/raw/3e4a6b86c58a3fd49f9952a32247fae440261ffc/production-istio-vs.yaml
 sed -i "s@- \"customera.INGRESSPLACEHOLDER\"@- \"customera.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
 sed -i "s@- \"customerb.INGRESSPLACEHOLDER\"@- \"customerb.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
 sed -i "s@- \"customerc.INGRESSPLACEHOLDER\"@- \"customerc.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
