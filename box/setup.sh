@@ -124,6 +124,11 @@ kubectl scale deployment prod-web -n customer-b --replicas=0 && kubectl scale de
 kubectl scale deployment staging-web -n customer-c --replicas=0 && kubectl scale deployment staging-web -n customer-c --replicas=1
 kubectl scale deployment prod-web -n customer-c --replicas=0 && kubectl scale deployment prod-web -n customer-c --replicas=1
 
+# Start Load Gen against customer sites
+echo "Starting Load Generator for Customers A, B & C"
+chmod +x $setup_script_dir/loadGen.sh
+nohup $setup_script_dir/loadGen.sh &
+
 # Print output
 echo "----------------------------"
 echo "INSTALLATION COMPLETED"
