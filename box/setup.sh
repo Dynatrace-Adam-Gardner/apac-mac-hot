@@ -108,6 +108,9 @@ export KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath=
 export KEPTN_ENDPOINT=http://keptn.127.0.0.1.nip.io/api
 keptn auth --endpoint=$KEPTN_ENDPOINT --api-token=$KEPTN_API_TOKEN
 
+# Configure Bridge Credentials
+keptn configure bridge --user=keptn --password=dynatrace
+
 # Allow Dynatrace access to create tags from labels and annotations in each NS
 kubectl -n customer-a create rolebinding default-view --clusterrole=view --serviceaccount=customer-a:default
 kubectl -n customer-b create rolebinding default-view --clusterrole=view --serviceaccount=customer-b:default
@@ -134,5 +137,6 @@ echo "Jenkins available at: http://jenkins.$VM_IP.nip.io"
 echo "Keptn's API available at: http://keptn.$VM_IP.nip.io/api"
 echo "Keptn's Bridge available at: http://keptn.$VM_IP.nip.io/bridge"
 echo "Keptn's API Token: $KEPTN_API_TOKEN"
-echo -e "Keptn's Bridge Credentials: \n$(keptn configure bridge --output)"
+echo "Keptn's Bridge Username: keptn"
+echo "Keptn's Bridge Password: dynatrace"
 echo "----------------------------"
