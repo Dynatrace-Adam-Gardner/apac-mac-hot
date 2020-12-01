@@ -59,6 +59,13 @@ curl -o cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-o
 sed -i "s/https:\/\/ENVIRONMENTID.live.dynatrace.com\/api/https:\/\/$DT_ENVIRONMENT_ID.live.dynatrace.com\/api/g" cr.yaml
 kubectl apply -f cr.yaml
 
+# Create Secret for Dynatrace-SLI-Provider (Keptn) to use
+kubectl create secret generic dynatrace -n "keptn" --from-literal="DT_TENANT=$DT_TENANT" --from-literal="DT_API_TOKEN=$DT_API_TOKEN"
+
+# Deploy Dynatrace SLI Provider
+wget https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/master/deploy/service.yaml -O $setup_script_dir/dynatrace-sli-provider-deploy.yaml
+kubectl apply -f $setup_script_dir/dynatrace-sli-provider-deploy.yaml
+
 # Wait for Dynatrace pods to signal Ready
 echo "Waiting for Dynatrace resources to be available..."
 kubectl wait --for=condition=ready pod --all -n dynatrace --timeout=60s
@@ -74,9 +81,9 @@ kubectl apply -f $setup_script_dir/deploy-customer-a.yaml -f $setup_script_dir/d
 kubectl apply -f $setup_script_dir/istio-gateway.yaml
 
 # Deploy Jenkins
-kubectl apply -f $setup_script_dir/jenkins-ns.yaml
-helm repo add jenkins https://charts.jenkins.io && helm repo update
-helm install -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkins jenkins/jenkins
+#kubectl apply -f $setup_script_dir/jenkins-ns.yaml
+#helm repo add jenkins https://charts.jenkins.io && helm repo update
+#helm install -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkins jenkins/jenkins
 
 # Deploy Production Istio VirtualService
 # Provides routes to customers from http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
