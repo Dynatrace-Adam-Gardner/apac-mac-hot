@@ -43,9 +43,9 @@ export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo
 
 # Install Helm
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
+#curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+#chmod 700 get_helm.sh
+#./get_helm.sh
 
 # Get Keptn Creds and Install Keptn
 echo '{ "clusterName": "default" }' | tee keptn-creds.json > /dev/null
@@ -62,11 +62,11 @@ sed -i "s/https:\/\/ENVIRONMENTID.live.dynatrace.com\/api/$DT_TENANT\/api/g" cr.
 kubectl apply -f cr.yaml
 
 # Create Secret for Dynatrace-SLI-Provider (Keptn) to use
-kubectl create secret generic dynatrace -n "keptn" --from-literal="DT_TENANT=$DT_TENANT" --from-literal="DT_API_TOKEN=$DT_API_TOKEN"
+#kubectl create secret generic dynatrace -n "keptn" --from-literal="DT_TENANT=$DT_TENANT" --from-literal="DT_API_TOKEN=$DT_API_TOKEN"
 
 # Deploy Dynatrace SLI Provider
-wget https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/master/deploy/service.yaml -O $setup_script_dir/dynatrace-sli-provider-deploy.yaml
-kubectl apply -f $setup_script_dir/dynatrace-sli-provider-deploy.yaml
+#wget https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/master/deploy/service.yaml -O $setup_script_dir/dynatrace-sli-provider-deploy.yaml
+#kubectl apply -f $setup_script_dir/dynatrace-sli-provider-deploy.yaml
 
 # Wait for Dynatrace pods to signal Ready
 echo "Waiting for Dynatrace resources to be available..."
