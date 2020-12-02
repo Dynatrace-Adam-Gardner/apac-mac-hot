@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: front-end
-          image: gardnera/canarytester:v2
+          image: adamgardnerdt/perform-demo-app:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -66,7 +66,7 @@ spec:
     spec:
       containers:
         - name: front-end
-          image: gardnera/canarytester:v2
+          image: adamgardnerdt/perform-demo-app:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 80
