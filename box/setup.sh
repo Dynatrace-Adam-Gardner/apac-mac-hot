@@ -1,5 +1,8 @@
 #
 # Script intended for use on an AWS t3.medium with 30GB HDD
+# DT_TENANT variable is either (WITHOUT TRAILING SLASH):
+# Dynatrace SaaS tenant: {your-environment-id}.live.dynatrace.com
+# Dynatrace-managed tenant: {your-domain}/e/{your-environment-id}
 # This file:
 # - Installs k3s, Dynatrace OneAgent and Istio
 # - Creates 6 namespaces: dynatrace, keptn, jenkins, customer-a, customer-b and customer-c
@@ -14,11 +17,10 @@
 
 export DT_API_TOKEN=***
 export DT_PAAS_TOKEN=***
-export DT_ENVIRONMENT_ID=***
+export DT_TENANT=***
 
 # DO NOT MODIFY ANYTHING BELOW THIS LINE
 export VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-export DT_TENANT=$DT_ENVIRONMENT_ID.live.dynatrace.com
 
 full_path=$(realpath $0)
 setup_script_dir=$(dirname $full_path)
@@ -56,7 +58,7 @@ kubectl create namespace dynatrace
 kubectl -n dynatrace create secret generic oneagent --from-literal="apiToken=$DT_API_TOKEN" --from-literal="paasToken=$DT_PAAS_TOKEN"
 kubectl apply -f https://github.com/Dynatrace/dynatrace-oneagent-operator/releases/latest/download/kubernetes.yaml
 curl -o cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
-sed -i "s/https:\/\/ENVIRONMENTID.live.dynatrace.com\/api/https:\/\/$DT_ENVIRONMENT_ID.live.dynatrace.com\/api/g" cr.yaml
+sed -i "s/https:\/\/ENVIRONMENTID.live.dynatrace.com\/api/$DT_TENANT\/api/g" cr.yaml
 kubectl apply -f cr.yaml
 
 # Create Secret for Dynatrace-SLI-Provider (Keptn) to use
