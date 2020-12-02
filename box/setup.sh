@@ -52,13 +52,12 @@ curl -sL https://get.keptn.sh | sudo -E bash
 keptn install --creds keptn-creds.json
 
 # Install Dynatrace OneAgent
-cd
 kubectl create namespace dynatrace
 kubectl -n dynatrace create secret generic oneagent --from-literal="apiToken=$DT_API_TOKEN" --from-literal="paasToken=$DT_PAAS_TOKEN"
 kubectl apply -f https://github.com/Dynatrace/dynatrace-oneagent-operator/releases/latest/download/kubernetes.yaml
-curl -o cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
-sed -i "s/https:\/\/ENVIRONMENTID.live.dynatrace.com\/api/$DT_TENANT\/api/g" cr.yaml
-kubectl apply -f cr.yaml
+curl -o $setup_script_dir/cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
+sed -i "s@https:\/\/ENVIRONMENTID.live.dynatrace.com\/api@$DT_TENANT\/api@g" $setup_script_dir/cr.yaml
+kubectl apply -f $setup_script_dir/cr.yaml
 
 # Create Secret for Dynatrace-SLI-Provider (Keptn) to use
 #kubectl create secret generic dynatrace -n "keptn" --from-literal="DT_TENANT=$DT_TENANT" --from-literal="DT_API_TOKEN=$DT_API_TOKEN"
