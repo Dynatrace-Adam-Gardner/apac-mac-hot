@@ -10,7 +10,6 @@
 # - Exposes 6 web UI frontends. 3 for production: http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
 #   and 3 for staging: http://staging.customera.VMIP.nip.io, http://staging.customerb.VMIP.nip.io, http://staging.customerc.VMIP.nip.io
 # - Exposes Keptn on: http://keptn.VMIP.nip.io
-# - Exposes Jenkins on: http://jenkins.<VMIP>.nip.io
 # customera is using v1 of the website (blue banner)
 # customerb is using v1 of the website (blue banner)
 # customerc is using v2 of the website (green banner)
@@ -146,7 +145,6 @@ echo "Customer B Staging Environment available at: http://staging.customerb.$VM_
 echo "Customer B Production Environment available at: http://customerb.$VM_IP.nip.io"
 echo "Customer C Staging Environment available at: http://staging.customerc.$VM_IP.nip.io"
 echo "Customer C Production Environment available at: http://customerc.$VM_IP.nip.io"
-echo "Jenkins available at: http://jenkins.$VM_IP.nip.io"
 echo "Keptn's API available at: http://keptn.$VM_IP.nip.io/api"
 echo "Keptn's Bridge available at: http://keptn.$VM_IP.nip.io/bridge"
 echo "Keptn's API Token: $KEPTN_API_TOKEN"
