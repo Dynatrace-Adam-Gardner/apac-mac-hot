@@ -12,7 +12,11 @@
 # - Exposes Keptn on: http://keptn.VMIP.nip.io
 # customera is using v1 of the website (blue banner)
 # customerb is using v1 of the website (blue banner)
-# customerc is using v2 of the website (green banner)
+# customerc is using v1 of the website (blue banner)
+# Docker image is https://hub.docker.com/repository/docker/adamgardnerdt/perform-demo-app/tags
+# v1 = No delay (blue banner)
+# v2 = 1s delay (green banner)
+# v3 = 250ms delay (orange banner)
 
 export DT_API_TOKEN=***
 export DT_PAAS_TOKEN=***
