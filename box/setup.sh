@@ -1,6 +1,6 @@
 #
 # Script intended for use on an AWS t3.medium with 30GB HDD
-# DT_TENANT variable is either (WITHOUT TRAILING SLASH):
+# DT_TENANT variable is either (WITHOUT https:// and TRAILING SLASH):
 # Dynatrace SaaS tenant: {your-environment-id}.live.dynatrace.com
 # Dynatrace-managed tenant: {your-domain}/e/{your-environment-id}
 # This file:
@@ -56,7 +56,7 @@ kubectl create namespace dynatrace
 kubectl -n dynatrace create secret generic oneagent --from-literal="apiToken=$DT_API_TOKEN" --from-literal="paasToken=$DT_PAAS_TOKEN"
 kubectl apply -f https://github.com/Dynatrace/dynatrace-oneagent-operator/releases/latest/download/kubernetes.yaml
 curl -o $setup_script_dir/cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
-sed -i "s@https:\/\/ENVIRONMENTID.live.dynatrace.com\/api@$DT_TENANT\/api@g" $setup_script_dir/cr.yaml
+sed -i "s@https:\/\/ENVIRONMENTID.live.dynatrace.com\/api@https:\/\/$DT_TENANT\/api@g" $setup_script_dir/cr.yaml
 kubectl apply -f $setup_script_dir/cr.yaml
 
 # Create Secret for Dynatrace-SLI-Provider (Keptn) to use
