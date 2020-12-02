@@ -137,17 +137,17 @@ chmod +x $setup_script_dir/loadGen.sh
 nohup $setup_script_dir/loadGen.sh &
 
 # Print output
-echo "----------------------------"
-echo "INSTALLATION COMPLETED"
-echo "Customer A Staging Environment available at: http://staging.customera.$VM_IP.nip.io"
-echo "Customer A Production Environment available at: http://customera.$VM_IP.nip.io"
-echo "Customer B Staging Environment available at: http://staging.customerb.$VM_IP.nip.io"
-echo "Customer B Production Environment available at: http://customerb.$VM_IP.nip.io"
-echo "Customer C Staging Environment available at: http://staging.customerc.$VM_IP.nip.io"
-echo "Customer C Production Environment available at: http://customerc.$VM_IP.nip.io"
-echo "Keptn's API available at: http://keptn.$VM_IP.nip.io/api"
-echo "Keptn's Bridge available at: http://keptn.$VM_IP.nip.io/bridge"
-echo "Keptn's API Token: $KEPTN_API_TOKEN"
-echo "Keptn's Bridge Username: keptn"
-echo "Keptn's Bridge Password: dynatrace"
-echo "----------------------------"
+echo "----------------------------" >> ~/installOutput.txt
+echo "INSTALLATION COMPLETED" >> ~/installOutput.txt
+echo "Customer A Staging Environment available at: http://staging.customera.$VM_IP.nip.io" >> ~/installOutput.txt
+echo "Customer A Production Environment available at: http://customera.$VM_IP.nip.io" >> ~/installOutput.txt
+echo "Customer B Staging Environment available at: http://staging.customerb.$VM_IP.nip.io" >> ~/installOutput.txt
+echo "Customer B Production Environment available at: http://customerb.$VM_IP.nip.io" >> ~/installOutput.txt
+echo "Customer C Staging Environment available at: http://staging.customerc.$VM_IP.nip.io" >> ~/installOutput.txt
+echo "Customer C Production Environment available at: http://customerc.$VM_IP.nip.io" >> ~/installOutput.txt
+echo "Keptn's API available at: http://keptn.$VM_IP.nip.io/api" >> ~/installOutput.txt
+echo "Keptn's Bridge available at: http://keptn.$VM_IP.nip.io/bridge" >> ~/installOutput.txt
+echo "Keptn's API Token: $KEPTN_API_TOKEN" >> ~/installOutput.txt
+echo "Keptn's Bridge Username: keptn" >> ~/installOutput.txt
+echo "Keptn's Bridge Password: dynatrace" >> ~/installOutput.txt
+echo "----------------------------" >> ~/installOutput.txt
