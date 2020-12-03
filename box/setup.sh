@@ -28,6 +28,10 @@ export VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 full_path=$(realpath $0)
 setup_script_dir=$(dirname $full_path)
 
+# Download Monaco
+wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.0.1/monaco-linux-amd64 -O monaco
+chmod +x monaco
+
 # Install k3s
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.18.3+k3s1 K3S_KUBECONFIG_MODE="644" sh -s - --no-deploy=traefik
 echo "Waiting 30s for kubernetes nodes to be available..."
