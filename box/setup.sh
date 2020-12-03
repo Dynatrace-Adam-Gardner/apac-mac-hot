@@ -4,6 +4,7 @@
 # Dynatrace SaaS tenant: {your-environment-id}.live.dynatrace.com
 # Dynatrace-managed tenant: {your-domain}/e/{your-environment-id}
 # This file:
+# - Downloads monaco 1.0.1 as ./monaco
 # - Installs k3s, Dynatrace OneAgent and Istio
 # - Creates 6 namespaces: dynatrace, keptn, jenkins, customer-a, customer-b and customer-c
 # - 6 deployments & services: prod-web and staging-web
