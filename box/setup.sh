@@ -121,8 +121,8 @@ kubectl scale deployment prod-web -n customer-c --replicas=0 && kubectl scale de
 
 # Start Load Gen against customer sites
 echo "Starting Load Generator for Customers A, B & C"
-chmod +x loadGen.sh
-nohup loadGen.sh &
+chmod +x ~/apac-mac-hot/box/loadGen.sh
+nohup ~/apac-mac-hot/box/loadGen.sh &
 
 # Print output
 echo "----------------------------" >> ~/installOutput.txt
