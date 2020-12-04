@@ -6,7 +6,7 @@
 # This file:
 # - Downloads monaco 1.0.1 as ./monaco
 # - Installs k3s, Dynatrace OneAgent and Istio
-# - Creates 6 namespaces: dynatrace, keptn, jenkins, customer-a, customer-b and customer-c
+# - Creates 6 namespaces: dynatrace, keptn, customer-a, customer-b and customer-c
 # - 6 deployments & services: prod-web and staging-web
 # - Exposes 6 web UI frontends. 3 for production: http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
 #   and 3 for staging: http://staging.customera.VMIP.nip.io, http://staging.customerb.VMIP.nip.io, http://staging.customerc.VMIP.nip.io
