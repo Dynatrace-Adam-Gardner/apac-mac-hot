@@ -51,6 +51,7 @@ export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo
 
 # Get Keptn Creds and Install Keptn
+cd apac-mac-hot/box
 echo '{ "clusterName": "default" }' | tee keptn-creds.json > /dev/null
 curl -sL https://get.keptn.sh | sudo -E bash
 keptn install --creds keptn-creds.json
