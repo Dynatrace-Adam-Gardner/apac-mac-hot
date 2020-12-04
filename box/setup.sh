@@ -24,10 +24,11 @@ export DT_PAAS_TOKEN=***
 export DT_TENANT=***
 
 # DO NOT MODIFY ANYTHING BELOW THIS LINE
+cd
 export VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 
 git clone https://github.com/Dynatrace-Adam-Gardner/apac-mac-hot
-cd apac-mac-hot/box
+cd ~/apac-mac-hot/box
 
 # Download Monaco
 wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.0.1/monaco-linux-amd64 -O ~/monaco
@@ -51,7 +52,7 @@ export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo
 
 # Get Keptn Creds and Install Keptn
-cd apac-mac-hot/box
+cd ~/apac-mac-hot/box
 echo '{ "clusterName": "default" }' | tee keptn-creds.json > /dev/null
 curl -sL https://get.keptn.sh | sudo -E bash
 keptn install --creds keptn-creds.json
