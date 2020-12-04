@@ -26,12 +26,12 @@ export DT_TENANT=***
 # DO NOT MODIFY ANYTHING BELOW THIS LINE
 export VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 
-full_path=$(realpath $0)
-setup_script_dir=$(dirname $full_path)
+git clone https://github.com/Dynatrace-Adam-Gardner/apac-mac-hot
+cd apac-mac-hot/box
 
 # Download Monaco
-wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.0.1/monaco-linux-amd64 -O monaco
-chmod +x monaco
+wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.0.1/monaco-linux-amd64 -O ~/monaco
+chmod +x ~/monaco
 
 # Install k3s
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.18.3+k3s1 K3S_KUBECONFIG_MODE="644" sh -s - --no-deploy=traefik
@@ -59,9 +59,9 @@ keptn install --creds keptn-creds.json
 kubectl create namespace dynatrace
 kubectl -n dynatrace create secret generic oneagent --from-literal="apiToken=$DT_API_TOKEN" --from-literal="paasToken=$DT_PAAS_TOKEN"
 kubectl apply -f https://github.com/Dynatrace/dynatrace-oneagent-operator/releases/latest/download/kubernetes.yaml
-curl -o $setup_script_dir/cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
-sed -i "s@https:\/\/ENVIRONMENTID.live.dynatrace.com\/api@https:\/\/$DT_TENANT\/api@g" $setup_script_dir/cr.yaml
-kubectl apply -f $setup_script_dir/cr.yaml
+curl -o cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
+sed -i "s@https:\/\/ENVIRONMENTID.live.dynatrace.com\/api@https:\/\/$DT_TENANT\/api@g" cr.yaml
+kubectl apply -f cr.yaml
 
 # Wait for Dynatrace pods to signal Ready
 echo "Waiting for Dynatrace resources to be available..."
@@ -72,34 +72,34 @@ sleep 60
 
 # Deploy Customers A, B and C
 echo "Deploying customer resources..."
-kubectl apply -f $setup_script_dir/deploy-customer-a.yaml -f $setup_script_dir/deploy-customer-b.yaml -f $setup_script_dir/deploy-customer-c.yaml
+kubectl apply -f deploy-customer-a.yaml -f deploy-customer-b.yaml -f deploy-customer-c.yaml
 
 # Deploy Istio Gateway
-kubectl apply -f $setup_script_dir/istio-gateway.yaml
+kubectl apply -f istio-gateway.yaml
 
 # Deploy Production Istio VirtualService
 # Provides routes to customers from http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
-sed -i "s@- \"customera.INGRESSPLACEHOLDER\"@- \"customera.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
-sed -i "s@- \"customerb.INGRESSPLACEHOLDER\"@- \"customerb.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
-sed -i "s@- \"customerc.INGRESSPLACEHOLDER\"@- \"customerc.$VM_IP.nip.io\"@g" $setup_script_dir/production-istio-vs.yaml
-kubectl apply -f $setup_script_dir/production-istio-vs.yaml
+sed -i "s@- \"customera.INGRESSPLACEHOLDER\"@- \"customera.$VM_IP.nip.io\"@g" production-istio-vs.yaml
+sed -i "s@- \"customerb.INGRESSPLACEHOLDER\"@- \"customerb.$VM_IP.nip.io\"@g" production-istio-vs.yaml
+sed -i "s@- \"customerc.INGRESSPLACEHOLDER\"@- \"customerc.$VM_IP.nip.io\"@g" production-istio-vs.yaml
+kubectl apply -f production-istio-vs.yaml
 
 # Deploy Staging Istio VirtualService
 # Provides routes to customers from http://staging.customera.VMIP.nip.io, http://staging.customerb.VMIP.nip.io and http://staging.customerc.VMIP.nip.io
-sed -i "s@- \"staging.customera.INGRESSPLACEHOLDER\"@- \"staging.customera.$VM_IP.nip.io\"@g" $setup_script_dir/staging-istio-vs.yaml
-sed -i "s@- \"staging.customerb.INGRESSPLACEHOLDER\"@- \"staging.customerb.$VM_IP.nip.io\"@g" $setup_script_dir/staging-istio-vs.yaml
-sed -i "s@- \"staging.customerc.INGRESSPLACEHOLDER\"@- \"staging.customerc.$VM_IP.nip.io\"@g" $setup_script_dir/staging-istio-vs.yaml
-kubectl apply -f $setup_script_dir/staging-istio-vs.yaml
+sed -i "s@- \"staging.customera.INGRESSPLACEHOLDER\"@- \"staging.customera.$VM_IP.nip.io\"@g" staging-istio-vs.yaml
+sed -i "s@- \"staging.customerb.INGRESSPLACEHOLDER\"@- \"staging.customerb.$VM_IP.nip.io\"@g" staging-istio-vs.yaml
+sed -i "s@- \"staging.customerc.INGRESSPLACEHOLDER\"@- \"staging.customerc.$VM_IP.nip.io\"@g" staging-istio-vs.yaml
+kubectl apply -f staging-istio-vs.yaml
 
 # Deploy Keptn Istio VirtualService
 # Provides routes to http://keptn.VMIP.nip.io/api and http://keptn.VMIP.nip.io/bridge
-sed -i "s@- \"keptn.INGRESSPLACEHOLDER\"@- \"keptn.$VM_IP.nip.io\"@g" $setup_script_dir/keptn-vs.yaml
-kubectl apply -f $setup_script_dir/keptn-vs.yaml
+sed -i "s@- \"keptn.INGRESSPLACEHOLDER\"@- \"keptn.$VM_IP.nip.io\"@g" keptn-vs.yaml
+kubectl apply -f keptn-vs.yaml
 
 # Deploy Jenkins Istio VirtualService
 # Provides routes to http://jenkins.VMIP.nip.io
-sed -i "s@- \"jenkins.INGRESSPLACEHOLDER\"@- \"jenkins.$VM_IP.nip.io\"@g" $setup_script_dir/jenkins-vs.yaml
-kubectl apply -f $setup_script_dir/jenkins-vs.yaml
+sed -i "s@- \"jenkins.INGRESSPLACEHOLDER\"@- \"jenkins.$VM_IP.nip.io\"@g" jenkins-vs.yaml
+kubectl apply -f jenkins-vs.yaml
 
 # Authorise Keptn
 export KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
@@ -124,8 +124,8 @@ kubectl scale deployment prod-web -n customer-c --replicas=0 && kubectl scale de
 
 # Start Load Gen against customer sites
 echo "Starting Load Generator for Customers A, B & C"
-chmod +x $setup_script_dir/loadGen.sh
-nohup $setup_script_dir/loadGen.sh &
+chmod +x loadGen.sh
+nohup loadGen.sh &
 
 # Print output
 echo "----------------------------" >> ~/installOutput.txt
