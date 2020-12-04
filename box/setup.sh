@@ -96,11 +96,6 @@ kubectl apply -f staging-istio-vs.yaml
 sed -i "s@- \"keptn.INGRESSPLACEHOLDER\"@- \"keptn.$VM_IP.nip.io\"@g" keptn-vs.yaml
 kubectl apply -f keptn-vs.yaml
 
-# Deploy Jenkins Istio VirtualService
-# Provides routes to http://jenkins.VMIP.nip.io
-sed -i "s@- \"jenkins.INGRESSPLACEHOLDER\"@- \"jenkins.$VM_IP.nip.io\"@g" jenkins-vs.yaml
-kubectl apply -f jenkins-vs.yaml
-
 # Authorise Keptn
 export KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
 export KEPTN_ENDPOINT=http://keptn.127.0.0.1.nip.io/api
