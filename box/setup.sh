@@ -1,5 +1,5 @@
 #
-# Script intended for use on an AWS t3.medium with 30GB HDD
+# Script intended for use on an AWS Ubuntu 18.04 t3.medium with 30GB HDD
 # DT_TENANT variable is either (WITHOUT https:// and TRAILING SLASH):
 # Dynatrace SaaS tenant: {your-environment-id}.live.dynatrace.com
 # Dynatrace-managed tenant: {your-domain}/e/{your-environment-id}
