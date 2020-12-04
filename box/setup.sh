@@ -50,11 +50,6 @@ cd istio-1.7.4
 export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo
 
-# Install Helm
-#curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-#chmod 700 get_helm.sh
-#./get_helm.sh
-
 # Get Keptn Creds and Install Keptn
 echo '{ "clusterName": "default" }' | tee keptn-creds.json > /dev/null
 curl -sL https://get.keptn.sh | sudo -E bash
@@ -67,13 +62,6 @@ kubectl apply -f https://github.com/Dynatrace/dynatrace-oneagent-operator/releas
 curl -o $setup_script_dir/cr.yaml https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/cr.yaml
 sed -i "s@https:\/\/ENVIRONMENTID.live.dynatrace.com\/api@https:\/\/$DT_TENANT\/api@g" $setup_script_dir/cr.yaml
 kubectl apply -f $setup_script_dir/cr.yaml
-
-# Create Secret for Dynatrace-SLI-Provider (Keptn) to use
-#kubectl create secret generic dynatrace -n "keptn" --from-literal="DT_TENANT=$DT_TENANT" --from-literal="DT_API_TOKEN=$DT_API_TOKEN"
-
-# Deploy Dynatrace SLI Provider
-#wget https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/master/deploy/service.yaml -O $setup_script_dir/dynatrace-sli-provider-deploy.yaml
-#kubectl apply -f $setup_script_dir/dynatrace-sli-provider-deploy.yaml
 
 # Wait for Dynatrace pods to signal Ready
 echo "Waiting for Dynatrace resources to be available..."
@@ -88,11 +76,6 @@ kubectl apply -f $setup_script_dir/deploy-customer-a.yaml -f $setup_script_dir/d
 
 # Deploy Istio Gateway
 kubectl apply -f $setup_script_dir/istio-gateway.yaml
-
-# Deploy Jenkins
-#kubectl apply -f $setup_script_dir/jenkins-ns.yaml
-#helm repo add jenkins https://charts.jenkins.io && helm repo update
-#helm install -n jenkins -f $setup_script_dir/jenkins-values.yaml jenkins jenkins/jenkins
 
 # Deploy Production Istio VirtualService
 # Provides routes to customers from http://customera.VMIP.nip.io, http://customerb.VMIP.nip.io and http://customerc.VMIP.nip.io
