@@ -1,5 +1,4 @@
 #
-# Script intended for use on an AWS Ubuntu 18.04 t3.medium with 30GB HDD
 # DT_TENANT variable is either (WITHOUT https:// and TRAILING SLASH):
 # Dynatrace SaaS tenant: {your-environment-id}.live.dynatrace.com
 # Dynatrace-managed tenant: {your-domain}/e/{your-environment-id}
@@ -31,7 +30,7 @@
 DT_TENANT=dtmanaged.dynatrace.training/e/$DYNATRACE_ENVIRONMENT_ID
 
 # Install jq
-sudo snap install jq
+sudo yum install jq -y
 
 # Create API Token
 api_token_json=$(curl -X POST "https://$DT_TENANT/api/v1/tokens" -H "accept: application/json; charset=utf-8" -H "Authorization: Api-Token $DYNATRACE_TOKEN" -H "Content-Type: application/json; charset=utf-8" -d "{\"name\":\"api-token-1\",\"expiresIn\":{\"value\":1,\"unit\":\"DAYS\"},\"scopes\":[\"DataExport\",\"LogExport\",\"ReadConfig\",\"WriteConfig\",\"metrics.read\",\"entities.read\",\"metrics.ingest\"]}")
