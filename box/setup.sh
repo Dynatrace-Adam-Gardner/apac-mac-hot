@@ -19,12 +19,29 @@
 # v2 = 1s delay (green banner)
 # v3 = 250ms delay (orange banner)
 
-export DT_API_TOKEN=***
-export DT_PAAS_TOKEN=***
-export DT_TENANT=***
+##########################################
+#  DO NOT MODIFY ANYTHING IN THIS SCRIPT #
+##########################################
 
-# DO NOT MODIFY ANYTHING BELOW THIS LINE
-export VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+# Retrieve token  management token
+# Comes from pipeline as $DYNATRACE_TOKEN
+
+# Retrieve environment. Available from DTU pipeline as $DYNATRACE_ENVIRONMENT_ID
+# DT_TENANT MUST be set without leading https:// or trailing slashes
+DT_TENANT=dtmanaged.dynatrace.training/e/$DYNATRACE_ENVIRONMENT_ID
+
+# Install jq
+sudo snap install jq
+
+# Create API Token
+api_token_json=$(curl -X POST "https://$DT_TENANT/api/v1/tokens" -H "accept: application/json; charset=utf-8" -H "Authorization: Api-Token $DYNATRACE_TOKEN" -H "Content-Type: application/json; charset=utf-8" -d "{\"name\":\"api-token-1\",\"expiresIn\":{\"value\":1,\"unit\":\"DAYS\"},\"scopes\":[\"DataExport\",\"LogExport\",\"ReadConfig\",\"WriteConfig\",\"metrics.read\",\"entities.read\",\"metrics.ingest\"]}")
+DT_API_TOKEN=$(echo $api_token_json | jq .token -r)
+
+# Create PAAS Token
+paas_token_json=$(curl -X POST "https://$DT_TENANT/api/v1/tokens" -H "accept: application/json; charset=utf-8" -H "Authorization: Api-Token $DYNATRACE_TOKEN" -H "Content-Type: application/json; charset=utf-8" -d "{\"name\":\"paas-token-1\",\"expiresIn\":{\"value\":1,\"unit\":\"DAYS\"},\"scopes\":[\"InstallerDownload\",\"SupportAlert\"]}"
+DT_PAAS_TOKEN=$(echo $paas_token_json| jq .token -r)
+
+VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 cd
 
 # Download Monaco
