@@ -37,7 +37,7 @@ api_token_json=$(curl -X POST "https://$DT_TENANT/api/v1/tokens" -H "accept: app
 DT_API_TOKEN=$(echo $api_token_json | jq .token -r)
 
 # Create PAAS Token
-paas_token_json=$(curl -X POST "https://$DT_TENANT/api/v1/tokens" -H "accept: application/json; charset=utf-8" -H "Authorization: Api-Token $DYNATRACE_TOKEN" -H "Content-Type: application/json; charset=utf-8" -d "{\"name\":\"paas-token-1\",\"expiresIn\":{\"value\":1,\"unit\":\"DAYS\"},\"scopes\":[\"InstallerDownload\",\"SupportAlert\"]}"
+paas_token_json=$(curl -X POST "https://$DT_TENANT/api/v1/tokens" -H "accept: application/json; charset=utf-8" -H "Authorization: Api-Token $DYNATRACE_TOKEN" -H "Content-Type: application/json; charset=utf-8" -d "{\"name\":\"paas-token-1\",\"expiresIn\":{\"value\":1,\"unit\":\"DAYS\"},\"scopes\":[\"InstallerDownload\",\"SupportAlert\"]}")
 DT_PAAS_TOKEN=$(echo $paas_token_json| jq .token -r)
 
 VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
